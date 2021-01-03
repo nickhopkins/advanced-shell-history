@@ -91,3 +91,63 @@ ME: {
     ;
   }
 }
+
+ALL_HIST_NO_DUPE: {
+  description: "all history, no duplicates"
+  sql: {
+    select
+      datetime(max(c.start_time), 'unixepoch', 'localtime') as 'when',
+      c.command as what
+    from
+      commands as c
+    group by c.command
+    order by 1
+    ;
+  }
+}
+
+RECENT: {
+  description: "recent queries"
+  sql: {
+    select
+      datetime(c.start_time, 'unixepoch', 'localtime') as 'when',
+      c.command as what
+    from
+      commands as c
+    order by 1 desc 
+    limit ${ASH_QLIMIT:-20}
+    ;
+  }
+}
+
+REGEX: {
+  description: "regex queries"
+  sql: {
+    select
+      datetime(c.start_time, 'unixepoch', 'localtime') as 'when',
+      c.command as what
+    from
+      commands as c
+    where command regexp '${ASH_QARG}'
+    order by 1 asc 
+    ;
+  }
+}
+
+REGEX_LIMIT: {
+  description: "regex queries"
+  sql: {
+  select * from (
+    select
+      datetime(c.start_time, 'unixepoch', 'localtime') as 'when',
+      c.command as what
+    from
+      commands as c
+    where command regexp '${ASH_QARG}'    
+    order by 1 desc
+    limit ${ASH_QLIMIT:-10}
+    )
+    order by 1 asc
+    ;
+  }
+}

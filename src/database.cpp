@@ -93,6 +93,14 @@ Database::Database(const string & filename)
         << sqlite3_errmsg(db) << endl;
   }
 
+  if( (sqlite3_enable_load_extension(db, 1) != SQLITE_OK)  ||
+      (sqlite3_load_extension(db, "/usr/lib/sqlite3/pcre.so", NULL, NULL )!= SQLITE_OK)) 
+  { 
+    cerr << "Unable to load regex extension" << endl;
+    sqlite3_close(db);
+    exit(-1);
+  }
+
   // Init the DB if it is missing the main tables.
   size_t registered = DBObject::table_names.size();
 

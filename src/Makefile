@@ -27,31 +27,28 @@ TRASH	:= ${OBJS} ${EXES} core Makefile-e
 CPP	:= g++
 C	:= gcc
 FLAGS	:= -g -Wall -DASH_VERSION="\"${VERSION}\"" -ansi -pedantic -O2
+LIBS    := -lsqlite3
 RT_LIB	:= -lrt
 
 .PHONY:	all clean distclean new
 all:	${EXES}
 
-${QUERIER}: sqlite3.o ${OBJ_Q}
-	${CPP} ${FLAGS} -o ${@} ${<} ${OBJ_Q} ${RT_LIB}
+${QUERIER}: ${OBJ_Q}
+	${CPP} ${FLAGS} -o ${@} ${OBJ_Q} ${RT_LIB} ${LIBS}
 
-${LOGGER}: sqlite3.o ${OBJ_L}
-	${CPP} ${FLAGS} -o ${@} ${<} ${OBJ_L} ${RT_LIB}
+${LOGGER}: ${OBJ_L}
+	${CPP} ${FLAGS} -o ${@} ${OBJ_L} ${RT_LIB} ${LIBS}
 
 %.o:	%.cpp %.hpp
-	${CPP} -c ${FLAGS} -o ${@} ${<} ${RT_LIB}
+	${CPP} -c ${FLAGS} -o ${@} ${<} ${RT_LIB} ${LIBS}
 
 queries.cpp: queries.hpp queries.l
 	flex -o queries.cpp queries.l
 
-sqlite3.o: sqlite3.c
-	${C} -DSQLITE_OMIT_LOAD_EXTENSION -DSQLITE_THREADSAFE=0 -c sqlite3.c
-
-
 new:	clean all
 
 distclean:
-	rm -f ${TRASH} sqlite3.o
+	rm -f ${TRASH}
 
 clean:
 	rm -f ${TRASH}
