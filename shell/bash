@@ -94,11 +94,15 @@ function __ash_begin_session() {
   [[ "${ASH:-0}" == "0" ]] && __ash_info __ash_begin_session && return
 
   export PROMPT_COMMAND="ASH=1 __ash_precmd \${?} \${PIPESTATUS[@]}"
+
+  #NH: new session for new tmux window
+  [[ -n "${TMUX}" ]] && unset ASH_SESSION_ID
+
   export ASH_SESSION_ID="$( ${ASH_LOG_BIN} --get_session_id )"
   if [[ -n "${ASH_CFG_MOTD:-}" ]]; then
     ${ASH_LOG_BIN} -a "${ASH_CFG_MOTD}session ${ASH_SESSION_ID}"
   fi
-  readonly ASH_SESSION_ID PROMPT_COMMAND
+  #readonly ASH_SESSION_ID PROMPT_COMMAND
 }
 
 
