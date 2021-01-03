@@ -348,3 +348,21 @@ void GroupedFormatter::insert(const ResultSet * rs, ostream & out) const {
   }
 }
 
+/**
+ * Makes this Formatter avaiable for use within the program.
+ */
+void BashHistFormatter::init() {
+  static BashHistFormatter instance("bashHist",
+    "output for loading into bash history");
+}
+
+void BashHistFormatter::insert(const ResultSet * rs, ostream & out) const {
+  if (!rs) return;  // Sanity check.
+
+  // Loop over the rs.data.
+  for (size_t r = 0; r < rs -> rows; ++r) {
+    out << "#" << rs->data[r][0] << endl;
+    out << rs->data[r][1] << endl;
+  }
+}
+

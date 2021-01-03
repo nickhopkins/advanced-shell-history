@@ -155,3 +155,67 @@ readonly -f __ash_precmd
 # Export functions used by subshells (not begin_session).
 #export -f __ash_last_command
 #export -f __ash_precmd
+
+function toggle_history() {
+  if [[ $_history_is_global == true ]]; then
+    _set_directory_history
+    printf "\nusing local history\n"
+  else
+    _set_global_history
+    printf "\nusing global history\n"
+  fi
+}
+
+function _history_reload() {
+  history -c
+  local file=~/.ash/tmp.$$
+  ash_query -q $1 -f bashHist > $file \
+  && history -r $file \
+  && rm -f $file
+}
+
+function _history_change_directory() {
+  if [[ $_history_is_global == false ]]; then
+    # log the cd command rather than the last command from the reloaded history
+    ASH=1 __ash_precmd
+    ASH_SKIP=1
+    _history_reload BASH_CWD_HISTORY
+  fi
+}
+
+function _set_directory_history() {
+  ASH_SKIP=1 # skip on toggle
+  if [[ $_history_is_global == true ]]; then
+    _history_reload BASH_CWD_HISTORY
+  fi
+  _history_is_global=false
+}
+
+function _set_global_history() {
+  ASH_SKIP=1 # skip on toggle
+  if [[ $_history_is_global == false ]]; then
+    _history_reload BASH_GLOBAL_HISTORY
+  fi
+  _history_is_global=true
+}
+
+# overload cd function
+cd()
+{
+  # builtin cd "$@"
+  cd_func "$@"
+  # xtitle
+  _history_change_directory
+}
+
+# Bind Ctrl-T as toggle
+bind '"\C-T":"toggle_history\n"'
+
+# Bind Alt-G as reload global hist |
+bind '\C-G":"_history_reload BASH_GLOBAL_HISTORY\n"'
+
+# default is to read from .bash_history
+# occassionally my want to reset it from global by running
+
+# vim: ts=2 sw=2 
+

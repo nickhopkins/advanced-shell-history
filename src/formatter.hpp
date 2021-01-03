@@ -116,6 +116,12 @@ FORMATTER(Grouped);
  */
 FORMATTER(Null);
 
+/**
+ * Singleton class that converts a result set into output, in the bash 
+ * history format.
+ */
+FORMATTER(BashHist);
+
 
 }  // namespace ash
 
