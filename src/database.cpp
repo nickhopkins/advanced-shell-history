@@ -324,6 +324,11 @@ try_prepare:
       LOG(FATAL) << "Failed to prepare statement after " << max_retries
                  << " failed attempts.";
       return 0;  // unreachable
+    case SQLITE_ERROR:
+      cerr << "Sql error: '" << sqlite3_errmsg(db) << "' : Check ash.log for details" << endl;
+      LOG(FATAL) << "Error preparing:\n" << query << "\nError:\n"
+                 << sqlite3_errmsg(db);
+      return 0;  // unreachable
     default:
       LOG(FATAL) << "Unexpected error code while preparing statement: "
                  << error_code;
