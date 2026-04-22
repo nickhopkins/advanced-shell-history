@@ -94,7 +94,7 @@ Database::Database(const string & filename)
   }
 
   if( (sqlite3_enable_load_extension(db, 1) != SQLITE_OK)  ||
-      (sqlite3_load_extension(db, "/usr/lib/sqlite3/pcre.so", NULL, NULL )!= SQLITE_OK)) 
+      (sqlite3_load_extension(db, "/home/nick/.local/lib/regexp.so", NULL, NULL )!= SQLITE_OK)) 
   { 
     cerr << "Unable to load regex extension" << endl;
     sqlite3_close(db);
