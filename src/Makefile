@@ -1,5 +1,5 @@
 #
-#   Copyright 2017 Carl Anderson
+#   Copyright 2026 Carl Anderson
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -28,7 +28,12 @@ CPP	:= g++
 C	:= gcc
 FLAGS	:= -g -Wall -DASH_VERSION="\"${VERSION}\"" -ansi -pedantic -O2
 SQLITE_FLAGS := -DSQLITE_ENABLE_FTS4 -DSQLITE_ENABLE_FTS5 -DSQLITE_ENABLE_MATH_FUNCTIONS -DSQLITE_ENABLE_PERCENTILE -DSQLITE_ENABLE_PREUPDATE_HOOK -DSQLITE_ENABLE_SESSION -DSQLITE_HAVE_ZLIB=1 -DSQLITE_THREADSAFE=0
+SYSTEM  := $(shell ${C} -dumpmachine)
+ifeq (apple, $(findstring apple,${SYSTEM}))
+RT_LIB	:=
+else
 RT_LIB	:= -lrt
+endif
 
 .PHONY:	all clean distclean new
 all:	${EXES}
