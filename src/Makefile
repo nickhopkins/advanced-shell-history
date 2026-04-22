@@ -27,28 +27,32 @@ TRASH	:= ${OBJS} ${EXES} core Makefile-e
 CPP	:= g++
 C	:= gcc
 FLAGS	:= -g -Wall -DASH_VERSION="\"${VERSION}\"" -ansi -pedantic -O2
-LIBS    := -lsqlite3
+SQLITE_FLAGS := -DSQLITE_ENABLE_FTS4 -DSQLITE_ENABLE_FTS5 -DSQLITE_ENABLE_MATH_FUNCTIONS -DSQLITE_ENABLE_PERCENTILE -DSQLITE_ENABLE_PREUPDATE_HOOK -DSQLITE_ENABLE_SESSION -DSQLITE_HAVE_ZLIB=1 -DSQLITE_THREADSAFE=0
 RT_LIB	:= -lrt
 
 .PHONY:	all clean distclean new
 all:	${EXES}
 
-${QUERIER}: ${OBJ_Q}
-	${CPP} ${FLAGS} -o ${@} ${OBJ_Q} ${RT_LIB} ${LIBS}
+${QUERIER}: sqlite3.o ${OBJ_Q}
+	${CPP} ${FLAGS} -o ${@} ${<} ${OBJ_Q} ${RT_LIB}
 
-${LOGGER}: ${OBJ_L}
-	${CPP} ${FLAGS} -o ${@} ${OBJ_L} ${RT_LIB} ${LIBS}
+${LOGGER}: sqlite3.o ${OBJ_L}
+	${CPP} ${FLAGS} -o ${@} ${<} ${OBJ_L} ${RT_LIB}
 
 %.o:	%.cpp %.hpp
-	${CPP} -c ${FLAGS} -o ${@} ${<} ${RT_LIB} ${LIBS}
+	${CPP} -c ${FLAGS} -o ${@} ${<} ${RT_LIB}
 
 queries.cpp: queries.hpp queries.l
 	flex -o queries.cpp queries.l
 
+sqlite3.o: sqlite3.c
+	${C} ${SQLITE_FLAGS} -c sqlite3.c
+
+
 new:	clean all
 
 distclean:
-	rm -f ${TRASH}
+	rm -f ${TRASH} sqlite3.o
 
 clean:
 	rm -f ${TRASH}
