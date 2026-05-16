@@ -165,6 +165,8 @@ BASH_CWD_HISTORY: {
          , command 
       from commands      
      where cwd = '${PWD}'
+       and command not regexp '^hh[gt]'
+       and rval = 0
      group by command
      order by 1 asc
     ;
@@ -172,12 +174,13 @@ BASH_CWD_HISTORY: {
 }
 
 BASH_GLOBAL_HISTORY: {
-  description: "Bash history for current_working_dir"
+  description: "Bash global history"
   sql: {
     select max(start_time) as start_time
          , command 
       from commands
      where command not regexp '^hh[gt]'
+       and rval = 0
     group by command
     order by 1 asc
     ;
